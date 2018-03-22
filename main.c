@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 14:56:32 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/03/22 18:05:12 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/03/22 19:31:22 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,84 @@ void	print_s(t_stack *s, char *oper)
 	ft_printf("\n------------------------------------------\n");
 }
 
+int		if_sorted(t_stack *s)
+{
+	int		i;
+
+	i = 0;
+	while (i + 1 < s->top_a)
+	{
+		if (s->stack_a[i] < s->stack_a[i + 1])
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int		if_first_smallest(t_stack *s)
+{
+	int		i;
+
+	i = 0;
+	while (s->top_a - 2 - i >= 0 && s->stack_a[s->top_a - 1] <
+			s->stack_a[s->top_a - 2 - i])
+		i++;
+	if (i == s->top_a - 1)
+		return (1);
+	return (0);
+}
+
+int		smallest_side(t_stack *s)
+{
+	int		i;
+	int		ans;
+
+	i = s->top_a - 1;
+	ans = i;
+	while (i - 1 >= 0)
+	{
+		if (s->stack_a[ans] > s->stack_a[i - 1])
+			ans = i - 1;
+		i--;
+	}
+	if (ans > (s->top_a - 1) / 2)
+		return (1);
+	else
+		return (2);
+}
+
+void	lets_sort(t_stack *s)
+{
+	while (!if_sorted(s))
+	{
+		if (if_first_smallest(s))
+		{
+			pb(s);
+			print_s(s, "pb");
+		}
+		else if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
+		{
+			sa(s);
+			print_s(s, "sa");
+		}
+		else if (smallest_side(s) == 1)
+		{
+			ra(s);
+			print_s(s, "ra");
+		}
+		else if (smallest_side(s) == 2)
+		{
+			rra(s);
+			print_s(s, "rra");
+		}
+	}
+	while (s->top_b - 1 >= 0)
+	{
+		pa(s);
+		print_s(s, "pa");
+	}
+}
+
 int		main(int argc, char **argv)
 {
 	t_stack		*stack;
@@ -238,6 +316,7 @@ int		main(int argc, char **argv)
 		push_a(stack, ft_atoi(argv[argc - i]));
 		i++;
 	}
+	/*ft_printf("%i\n", if_sorted(stack));
 	sa(stack);
 	print_s(stack, "sa");
 	pb(stack);
@@ -246,16 +325,17 @@ int		main(int argc, char **argv)
 	print_s(stack, "pb");
 	pb(stack);
 	print_s(stack, "pb");
-	rb(stack);
-	print_s(stack, "rr");
-	rrr(stack);
-	print_s(stack, "rrr");
+	rra(stack);
+	print_s(stack, "rra");
 	pa(stack);
 	print_s(stack, "pa");
 	pa(stack);
 	print_s(stack, "pa");
 	pa(stack);
 	print_s(stack, "pa");
+	ft_printf("%i\n", if_sorted(stack));*/
+	lets_sort(stack);
+//	ft_printf("%i\n", smallest_side(stack));
 //	i = 0;
 //	while (stack->top_a != 0)
 //	{
