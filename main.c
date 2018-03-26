@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 14:56:32 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/03/23 16:37:52 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/03/26 21:23:14 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,6 +276,42 @@ int		smallest_side(t_stack *s)
 		return (2);
 }
 
+void	find_min(t_stack *s)
+{
+	int		i;
+
+	i = 0;
+	s->b_min = s->stack_b[s->top_b - 1];
+	s->b_min_idx = s->top_b - 1;
+	while (s->top_b - 2 - i >= 0)
+	{
+		if (s->b_min > s->stack_b[s->top_b - i - 2])
+		{
+			s->b_min = s->stack_b[s->top_b - i - 2];
+			s->b_min_idx = s->top_b - i - 2;
+		}
+		i++;
+	}
+}
+
+void	find_max(t_stack *s)
+{
+	int		i;
+
+	i = 0;
+	s->b_max = s->stack_b[s->top_b - 1];
+	s->b_max_idx = s->top_b - 1;
+	while (s->top_b - 2 - i >= 0)
+	{
+		if (s->b_max < s->stack_b[s->top_b - i - 2])
+		{
+			s->b_max = s->stack_b[s->top_b - i - 2];
+			s->b_max_idx = s->top_b - i - 2;
+		}
+		i++;
+	}
+}
+
 void	lets_sort(t_stack *s)
 {
 	int		count;
@@ -287,28 +323,205 @@ void	lets_sort(t_stack *s)
 		{
 			pb(s);
 			count++;
-//			print_s(s, "pb");
+			//			print_s(s, "pb");
 		}
 		else if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
 		{
 			sa(s);
 			count++;
-//			print_s(s, "sa");
+			//			print_s(s, "sa");
 		}
 		else if (smallest_side(s) == 2)
 		{
 			rra(s);
 			count++;
-//			print_s(s, "rra");
+			//			print_s(s, "rra");
 		}
 		else if (smallest_side(s) == 1)
 		{
 			ra(s);
 			count++;
-//			print_s(s, "ra");
+			//			print_s(s, "ra");
 		}
 	}
 	while (s->top_b - 1 >= 0)
+	{
+		pa(s);
+		count++;
+		//		print_s(s, "pa");
+	}
+	ft_printf("%d\n", count);
+}
+
+void	put_max_on_top(t_stack *s, int *count)
+{
+	if (s->b_max_idx >= s->top_b / 2)
+		while (s->stack_b[s->top_b - 1] != s->b_max)
+		{
+			rb(s);
+			*count += 1;
+//			print_s(s, "rb");
+		}
+	else
+		while (s->stack_b[s->top_b - 1] != s->b_max)
+		{
+			rrb(s);
+			*count += 1;
+//			print_s(s, "rrb");
+		}
+}
+
+int		find_place_to_place(t_stack *s)
+{
+	int	i;
+	int	ans;
+
+	i = 0;
+	ans = s->top_b - 1;
+	while (s->top_b - 1 - i >= 0)
+	{
+		if (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1 - i])
+		{
+			ans = s->top_b - 1 - i;
+			break ;
+		}
+		i++;
+	}
+	return (ans);
+}
+
+void	do_some_rotations(t_stack *s, int *count)
+{
+	int		i;
+	int		j;
+
+	i = find_place_to_place(s);
+	if (s->top_b % 2 == 1)
+		j = s->top_b + 1;
+	else
+		j = s->top_b;
+	if (i >= j / 2)
+	{
+		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
+		{
+			rb(s);
+			*count += 1;
+//			print_s(s, "rb");
+		}
+	}
+	else
+	{
+		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
+		{
+			rrb(s);
+			*count += 1;
+//			print_s(s, "rrb");
+		}
+	}
+	if (s->stack_a[s->top_a - 1] > s->stack_b[0])
+	{
+		rrb(s);
+		*count += 1;
+//		print_s(s, "rrb");
+	}
+}
+
+void	do_some_jokes(t_stack *s, int *count)
+{
+	int		i;
+	int		j;
+
+	j = find_place_to_place(s);
+	if (s->top_b % 2 == 1)
+		i = s->top_b + 1;
+	else
+		i = s->top_b;
+	if (j > i)
+	{
+		while (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
+			&& s->stack_a[s->top_a - 1] > s->stack_b[0])
+			{
+				rb(s);
+				*count += 1;
+//				print_s(s, "rb");
+			}
+//		rrb(s);
+//		print_s(s, "rrb");
+	}
+	else
+	{
+		while(s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
+			&& s->stack_a[s->top_a - 1] > s->stack_b[0])
+		{
+			rrb(s);
+			*count += 1;
+//			print_s(s, "rrb");
+		}
+//		rb(s);
+//		print_s(s, "rb");
+	}
+}
+
+void	big_sort(t_stack *s)
+{
+	int		count;
+
+	count = 0;
+	if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
+	{
+		sa(s);
+		count++;
+//		print_s(s, "sa");
+	}
+	pb(s);
+//	print_s(s, "pb");
+	pb(s);
+//	print_s(s, "pb");
+	count += 2;
+	while (s->top_a != 0)
+	{
+		find_min(s);
+		find_max(s);
+		if (s->stack_a[s->top_a - 1] > s->b_max ||
+			s->stack_a[s->top_a - 1] < s->b_min)
+		{
+			put_max_on_top(s, &count);
+			pb(s);
+//			print_s(s, "pb");
+			count++;
+		}
+		else if (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
+		&& s->stack_a[s->top_a - 1] < s->stack_b[0])
+		{
+			pb(s);
+			count++;
+//			print_s(s, "pb");
+		}
+		else if (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
+		{
+			do_some_rotations(s, &count);
+			pb(s);
+//			print_s(s, "pb");
+			count++;
+		}
+		else if (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
+		&& s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1])
+		{
+			do_some_jokes(s, &count);
+//			do_some_rotations(s);
+			pb(s);
+//			print_s(s, "pb");
+			count++;
+		}
+	}
+	find_max(s);
+	while (s->stack_b[s->top_b - 1] != s->b_max)
+	{
+		rb(s);
+		count++;
+//		print_s(s, "rb");
+	}
+	while (s->top_b)
 	{
 		pa(s);
 		count++;
@@ -332,7 +545,13 @@ int		main(int argc, char **argv)
 		push_a(stack, ft_atoi(argv[argc - i]));
 		i++;
 	}
-	lets_sort(stack);
+//	if (argc < 10)
+//		lets_sort(stack);
+//	else
+		big_sort(stack);
+	find_min(stack);
+	find_max(stack);
+//	put_max_on_top(stack);
 	destroy_stack(stack);
 	exit (0);
 }

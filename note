@@ -3,3 +3,9 @@
 3. If the smallest element is on the left side --> ra, else --> rra.
 4. Do this actions until stack a is sorted.
 5. pa untill stack b is empty.
+
+Instruction for BIGcd stack:
+1. If first param > second --> pb. Else --> sa && pb. (Not in cicle)
+2. pb. (Not in cicle)
+3. Start cicle (while not sorted).
+4. 
