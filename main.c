@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 14:56:32 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/03/27 12:50:00 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/03/27 14:04:59 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,12 +420,6 @@ void	do_some_rotations(t_stack *s, int *count)
 			print_s(s, "rrb");
 		}
 	}
-//	if (s->stack_a[s->top_a - 1] > s->stack_b[0])
-//	{
-//		rrb(s);
-//		*count += 1;
-//		print_s(s, "rrb");
-//	}
 }
 
 void	do_some_jokes(t_stack *s, int *count)
@@ -447,8 +441,6 @@ void	do_some_jokes(t_stack *s, int *count)
 				*count += 1;
 				print_s(s, "rb");
 			}
-//		rrb(s);
-//		print_s(s, "rrb");
 	}
 	else
 	{
@@ -459,9 +451,51 @@ void	do_some_jokes(t_stack *s, int *count)
 			*count += 1;
 			print_s(s, "rrb");
 		}
-//		rb(s);
-//		print_s(s, "rb");
 	}
+}
+
+void	optimizer_v2(t_stack *s, int *count)
+{
+	int		diff1;
+	int		diff2;
+
+	if (s->top_a == 1)
+		return ;
+	diff1 = s->stack_a[s->top_a - 1] - s->stack_b[s->top_b - 1];
+	if (diff1 < 0)
+		diff1 = -diff1;
+	diff2 = s->stack_a[0] - s->stack_b[s->top_b - 1];
+	if (diff2 < 0)
+		diff2 = -diff2;
+	if (diff1 > diff2)
+	{
+		rra(s);
+		print_s(s, "rra");
+		*count += 1;
+	}
+}
+
+void	optimizer_v1(t_stack *s, int *count)
+{
+	int		diff1;
+	int		diff2;
+
+	if (s->top_a == 1)
+		return ;
+	diff1 = s->stack_a[s->top_a - 1] - s->stack_b[s->top_b - 1];
+	if (diff1 < 0)
+		diff1 = -diff1;
+	diff2 = s->stack_a[s->top_a - 2] - s->stack_b[s->top_b - 1];
+	if (diff2 < 0)
+		diff2 = -diff2;
+	if (diff1 > diff2)
+	{
+		sa(s);
+		print_s(s, "sa");
+		*count += 1;
+	}
+	else
+		optimizer_v2(s, count);
 }
 
 void	big_sort(t_stack *s)
@@ -484,6 +518,7 @@ void	big_sort(t_stack *s)
 	{
 		find_min(s);
 		find_max(s);
+		optimizer_v1(s, &count);
 		if (s->stack_a[s->top_a - 1] > s->b_max ||
 			s->stack_a[s->top_a - 1] < s->b_min)
 		{
@@ -510,7 +545,6 @@ void	big_sort(t_stack *s)
 		&& s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1])
 		{
 			do_some_jokes(s, &count);
-//			do_some_rotations(s);
 			pb(s);
 			print_s(s, "pb");
 			count++;
