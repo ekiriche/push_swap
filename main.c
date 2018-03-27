@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 14:56:32 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/03/26 21:23:14 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/03/27 12:50:00 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,14 +360,14 @@ void	put_max_on_top(t_stack *s, int *count)
 		{
 			rb(s);
 			*count += 1;
-//			print_s(s, "rb");
+			print_s(s, "rb");
 		}
 	else
 		while (s->stack_b[s->top_b - 1] != s->b_max)
 		{
 			rrb(s);
 			*count += 1;
-//			print_s(s, "rrb");
+			print_s(s, "rrb");
 		}
 }
 
@@ -402,28 +402,30 @@ void	do_some_rotations(t_stack *s, int *count)
 		j = s->top_b;
 	if (i >= j / 2)
 	{
-		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
+		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1] ||
+				s->stack_a[s->top_a - 1] > s->stack_b[0])
 		{
 			rb(s);
 			*count += 1;
-//			print_s(s, "rb");
+			print_s(s, "rb");
 		}
 	}
 	else
 	{
-		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
+		while (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1] ||
+				s->stack_a[s->top_a - 1] > s->stack_b[0])
 		{
 			rrb(s);
 			*count += 1;
-//			print_s(s, "rrb");
+			print_s(s, "rrb");
 		}
 	}
-	if (s->stack_a[s->top_a - 1] > s->stack_b[0])
-	{
-		rrb(s);
-		*count += 1;
+//	if (s->stack_a[s->top_a - 1] > s->stack_b[0])
+//	{
+//		rrb(s);
+//		*count += 1;
 //		print_s(s, "rrb");
-	}
+//	}
 }
 
 void	do_some_jokes(t_stack *s, int *count)
@@ -443,7 +445,7 @@ void	do_some_jokes(t_stack *s, int *count)
 			{
 				rb(s);
 				*count += 1;
-//				print_s(s, "rb");
+				print_s(s, "rb");
 			}
 //		rrb(s);
 //		print_s(s, "rrb");
@@ -455,7 +457,7 @@ void	do_some_jokes(t_stack *s, int *count)
 		{
 			rrb(s);
 			*count += 1;
-//			print_s(s, "rrb");
+			print_s(s, "rrb");
 		}
 //		rb(s);
 //		print_s(s, "rb");
@@ -471,12 +473,12 @@ void	big_sort(t_stack *s)
 	{
 		sa(s);
 		count++;
-//		print_s(s, "sa");
+		print_s(s, "sa");
 	}
 	pb(s);
-//	print_s(s, "pb");
+	print_s(s, "pb");
 	pb(s);
-//	print_s(s, "pb");
+	print_s(s, "pb");
 	count += 2;
 	while (s->top_a != 0)
 	{
@@ -487,7 +489,7 @@ void	big_sort(t_stack *s)
 		{
 			put_max_on_top(s, &count);
 			pb(s);
-//			print_s(s, "pb");
+			print_s(s, "pb");
 			count++;
 		}
 		else if (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
@@ -495,13 +497,13 @@ void	big_sort(t_stack *s)
 		{
 			pb(s);
 			count++;
-//			print_s(s, "pb");
+			print_s(s, "pb");
 		}
 		else if (s->stack_a[s->top_a - 1] < s->stack_b[s->top_b - 1])
 		{
 			do_some_rotations(s, &count);
 			pb(s);
-//			print_s(s, "pb");
+			print_s(s, "pb");
 			count++;
 		}
 		else if (s->stack_a[s->top_a - 1] > s->stack_b[s->top_b - 1]
@@ -510,7 +512,7 @@ void	big_sort(t_stack *s)
 			do_some_jokes(s, &count);
 //			do_some_rotations(s);
 			pb(s);
-//			print_s(s, "pb");
+			print_s(s, "pb");
 			count++;
 		}
 	}
@@ -519,13 +521,13 @@ void	big_sort(t_stack *s)
 	{
 		rb(s);
 		count++;
-//		print_s(s, "rb");
+		print_s(s, "rb");
 	}
 	while (s->top_b)
 	{
 		pa(s);
 		count++;
-//		print_s(s, "pa");
+		print_s(s, "pa");
 	}
 	ft_printf("%d\n", count);
 }
