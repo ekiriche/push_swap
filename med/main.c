@@ -292,6 +292,18 @@ void	find_min(t_stack *s)
 		}
 		i++;
 	}
+	i = 0;
+	s->a_min = s->stack_a[s->top_a - 1];
+	s->a_min_idx = s->top_a - 1;
+	while (s->top_a - 2 - i >= 0)
+	{
+		if (s->a_min > s->stack_a[s->top_a - i - 2])
+		{
+			s->a_min = s->stack_a[s->top_a - i - 2];
+			s->a_min_idx = s->top_a - i - 2;
+		}
+		i++;
+	}
 }
 
 void	find_max(t_stack *s)
@@ -374,10 +386,10 @@ int		find_median_a(t_stack *s)
 				count_bigger++;
 			idx2++;
 		}
-		ft_printf("%i %i\n", count_smaller, count_bigger);
+//		ft_printf("%i %i\n", count_smaller, count_bigger);
 		if (s->top_a % 2 == 1 && count_smaller == count_bigger)
 			return (idx1);
-		else if (s->top_a % 2 == 0 && (count_smaller == count_bigger + 1 || count_smaller + 1 == count_bigger))
+		else if (s->top_a % 2 == 0 && count_smaller + 1 == count_bigger)
 			return (idx1);
 		idx1++;
 	}
@@ -389,17 +401,19 @@ void	push_to_b(t_stack *s, int idx, int *count)
 	int temp;
 
 	temp = s->stack_a[idx];
+	find_min(s);
+	int temp2 = s->a_min;
 	if (idx < s->top_a / 2)
 	{
 		while (s->stack_a[s->top_a - 1] != temp)
 		{
 			rra(s);
 			*count += 1;
-			print_s(s, "ra");
+//			print_s(s, "ra");
 		}
 		pb(s);
 		*count += 1;
-		print_s(s, "pb");
+//		print_s(s, "pb");
 	}
 	else
 	{
@@ -407,12 +421,12 @@ void	push_to_b(t_stack *s, int idx, int *count)
 		{
 			ra(s);
 			*count += 1;
-			print_s(s, "ra");
+//			print_s(s, "ra");
 		}
 		pb(s);
 		*count += 1;
-		print_s(s, "pb");		
-	}
+//		print_s(s, "pb");		
+	}	
 }
 
 void	sort_a(t_stack *s, int *count)
@@ -426,36 +440,52 @@ void	sort_a(t_stack *s, int *count)
 		{
 			sa(s);
 			*count += 1;
-			print_s(s, "sa");
+//			print_s(s, "sa");
 		}
 		else
 		{
 			rra(s);
 			*count += 1;
-			print_s(s, "rra");
+//			print_s(s, "rra");
 		}
 	}
 }
 
-void	push_to_a(t_stack *s, int idx, int *count)
+void	push_to_a(t_stack *s, int *count)
 {
+	static int there = 0;
+
 	if (s->b_max_idx >= s->top_b / 2)
-		while (s->stack_b[s->top_b - 1] != s->b_max)
+		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
 		{
 			rb(s);
+			there++;
 			*count += 1;
-			print_s(s, "rb");
+//			print_s(s, "rb");
 		}
 	else
-		while (s->stack_b[s->top_b - 1] != s->b_max)
+		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
 		{
 			rrb(s);
+			there++;
 			*count += 1;
-			print_s(s, "rrb");
+//			print_s(s, "rrb");
 		}
-	pa(s);
-	print_s(s, "pa");
-	*count += 1;
+	if (s->stack_b[s->top_b - 1] == s->b_min)
+	{
+		pa(s);
+		ra(s);
+		*count += 2;
+		there += 2;
+	}
+	else
+	{
+		pa(s);
+//		print_s(s, "pa");
+		*count += 1;
+		there++;
+	}
+	printf("%d\n", there);
 }
 
 void	main_sort(t_stack *s)
@@ -465,7 +495,7 @@ void	main_sort(t_stack *s)
 	int count;
 
 	count = 0;
-	while (s->top_a > 3)
+	while (s->top_a > 3 && !if_sorted(s))
 	{
 		temp = s->stack_a[find_median_a(s)];
 		i = s->top_a - 1;
@@ -484,8 +514,15 @@ void	main_sort(t_stack *s)
 	while (s->top_b > 0)
 	{
 		find_max(s);
-		push_to_a(s, s->b_max_idx, &count);
+		find_min(s);
+		push_to_a(s, &count);
 	}
+	while (!if_sorted(s))
+	{
+		rra(s);
+		count++;
+	}
+	print_s(s, "none");
 	printf("%i\n", count);
 }
 
@@ -504,9 +541,10 @@ int		main(int argc, char **argv)
 		push_a(stack, ft_atoi(argv[argc - i]));
 		i++;
 	}
-//	ft_printf("%i", find_median(stack));
-//	lets_sort(stack);
-	main_sort(stack);
+	ft_putstr("\x1B[31m");
+	ft_putstr("dude");
+	ft_putstr("\x1B[0m");
+//	main_sort(stack);
 	destroy_stack(stack);
 	exit (0);
 }

@@ -26,6 +26,8 @@ typedef struct		s_stack
 	int				b_min_idx;
 	int				b_max;
 	int				b_max_idx;
+	int				a_min;
+	int				a_min_idx;
 }					t_stack;
 
 #endif
