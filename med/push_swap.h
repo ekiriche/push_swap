@@ -28,6 +28,15 @@ typedef struct		s_stack
 	int				b_max_idx;
 	int				a_min;
 	int				a_min_idx;
+	int				a_max;
+	int				a_max_idx;
 }					t_stack;
+
+typedef struct 		s_flags
+{
+	int 			flag_v;
+	int				flag_color;
+	int				flag_count;
+}					t_flags;
 
 #endif

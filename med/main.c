@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 14:56:32 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/04/17 12:28:04 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/04/18 14:57:49 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,16 +200,29 @@ void		destroy_stack(t_stack *stack)
 	ft_memdel((void**)&stack);
 }
 
-void	print_s(t_stack *s, char *oper)
+void	print_s(t_stack *s, char *oper, t_flags *f)
 {
 	int		i;
 
+	if (f->flag_v != 1)
+	{
+		ft_printf("%s\n", oper);
+		return ;
+	}
 	i = s->top_a - 1;
 	ft_printf("Exec %s:\n", oper);
 	ft_printf("%s", "a --> ");
 	while (i >= 0)
 	{
-		ft_printf("%i ", s->stack_a[i]);
+		if (f->flag_color == 1 && i == s->top_a - 1 && ft_strcmp(oper, "pa") == 0)
+			ft_printf("%s%i%s ", "\x1B[31m", s->stack_a[i], "\x1B[0m");
+		else if (f->flag_color == 1 && (i == s->top_a - 1 || i == s->top_a - 2) &&
+			ft_strcmp(oper, "sa") == 0)
+			ft_printf("%s%i%s ", "\x1B[31m", s->stack_a[i], "\x1B[0m");
+		else if (f->flag_color == 1 && (ft_strcmp(oper, "ra") == 0 || ft_strcmp(oper, "rra") == 0))
+			ft_printf("%s%i%s ", "\x1B[36m", s->stack_a[i], "\x1B[0m");
+		else
+			ft_printf("%i ", s->stack_a[i]);
 		i--;
 	}
 	ft_printf("\n");
@@ -217,7 +230,12 @@ void	print_s(t_stack *s, char *oper)
 	i = s->top_b - 1;
 	while (i >= 0)
 	{
-		ft_printf("%i ", s->stack_b[i]);
+		if (f->flag_color == 1 && i == s->top_b - 1 && ft_strcmp(oper, "pb") == 0)
+			ft_printf("%s%i%s ", "\x1B[31m", s->stack_b[i], "\x1B[0m");
+		else if (f->flag_color == 1 && (ft_strcmp(oper, "rb") == 0 || ft_strcmp(oper, "rrb") == 0))
+			ft_printf("%s%i%s ", "\x1B[36m", s->stack_b[i], "\x1B[0m");
+		else
+			ft_printf("%i ", s->stack_b[i]);
 		i--;
 	}
 	ft_printf("\n------------------------------------------\n");
@@ -322,9 +340,21 @@ void	find_max(t_stack *s)
 		}
 		i++;
 	}
+	i = 0;
+	s->a_max = s->stack_a[s->top_a - 1];
+	s->a_max_idx = s->top_a - 1;
+	while (s->top_a - 2 - i >= 0)
+	{
+		if (s->a_max < s->stack_a[s->top_a - i - 2])
+		{
+			s->a_max = s->stack_a[s->top_a - i - 2];
+			s->a_max_idx = s->top_a - i - 2;
+		}
+		i++;
+	}
 }
 
-void	lets_sort(t_stack *s)
+void	lets_sort(t_stack *s, t_flags *f)
 {
 	int		count;
 
@@ -335,34 +365,35 @@ void	lets_sort(t_stack *s)
 		{
 			pb(s);
 			count++;
-			print_s(s, "pb");
+			print_s(s, "pb", f);
 		}
 		else if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
 		{
 			sa(s);
 			count++;
-			print_s(s, "sa");
+			print_s(s, "sa", f);
 		}
 		else if (smallest_side(s) == 2)
 		{
 			rra(s);
 			count++;
-			print_s(s, "rra");
+			print_s(s, "rra", f);
 		}
 		else if (smallest_side(s) == 1)
 		{
 			ra(s);
 			count++;
-			print_s(s, "ra");
+			print_s(s, "ra", f);
 		}
 	}
 	while (s->top_b - 1 >= 0)
 	{
 		pa(s);
 		count++;
-		print_s(s, "pa");
+		print_s(s, "pa", f);
 	}
-	ft_printf("%d\n", count);
+	if (f->flag_count == 1)
+		ft_printf("Total number of operations = %d\n", count);
 }
 
 int		find_median_a(t_stack *s)
@@ -396,24 +427,23 @@ int		find_median_a(t_stack *s)
 	return (-42);
 }
 
-void	push_to_b(t_stack *s, int idx, int *count)
+void	push_to_b(t_stack *s, int idx, int *count, t_flags *f)
 {
 	int temp;
 
 	temp = s->stack_a[idx];
 	find_min(s);
-	int temp2 = s->a_min;
 	if (idx < s->top_a / 2)
 	{
 		while (s->stack_a[s->top_a - 1] != temp)
 		{
 			rra(s);
 			*count += 1;
-//			print_s(s, "ra");
+			print_s(s, "ra", f);
 		}
 		pb(s);
 		*count += 1;
-//		print_s(s, "pb");
+		print_s(s, "pb", f);
 	}
 	else
 	{
@@ -421,15 +451,15 @@ void	push_to_b(t_stack *s, int idx, int *count)
 		{
 			ra(s);
 			*count += 1;
-//			print_s(s, "ra");
+			print_s(s, "ra", f);
 		}
 		pb(s);
 		*count += 1;
-//		print_s(s, "pb");		
+		print_s(s, "pb", f);
 	}	
 }
 
-void	sort_a(t_stack *s, int *count)
+void	sort_a(t_stack *s, int *count, t_flags *f)
 {
 	int i;
 
@@ -440,18 +470,18 @@ void	sort_a(t_stack *s, int *count)
 		{
 			sa(s);
 			*count += 1;
-//			print_s(s, "sa");
+			print_s(s, "sa", f);
 		}
 		else
 		{
 			rra(s);
 			*count += 1;
-//			print_s(s, "rra");
+			print_s(s, "rra", f);
 		}
 	}
 }
 
-void	push_to_a(t_stack *s, int *count)
+void	push_to_a(t_stack *s, int *count, t_flags *f)
 {
 	static int there = 0;
 
@@ -459,92 +489,241 @@ void	push_to_a(t_stack *s, int *count)
 		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
 		{
 			rb(s);
-			there++;
 			*count += 1;
-//			print_s(s, "rb");
+			print_s(s, "rb", f);
 		}
 	else
 		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
 		{
 			rrb(s);
-			there++;
 			*count += 1;
-//			print_s(s, "rrb");
+			print_s(s, "rrb", f);
 		}
 	if (s->stack_b[s->top_b - 1] == s->b_min)
 	{
 		pa(s);
+		print_s(s, "pa", f);
 		ra(s);
+		print_s(s, "ra", f);
 		*count += 2;
-		there += 2;
 	}
 	else
 	{
 		pa(s);
-//		print_s(s, "pa");
+		print_s(s, "pa", f);
 		*count += 1;
-		there++;
 	}
-	printf("%d\n", there);
 }
 
-void	main_sort(t_stack *s)
+void	main_sort(t_stack *s, t_flags *f)
 {
 	int temp;
 	int i;
 	int count;
 
 	count = 0;
+	int flag = 3;
 	while (s->top_a > 3 && !if_sorted(s))
 	{
 		temp = s->stack_a[find_median_a(s)];
 		i = s->top_a - 1;
+		if (flag >= 1 && s->size >= 400)
+		{
+			while (i >= 0 && s->top_a > 3 && !if_sorted(s))
+		{
+			if (s->stack_a[i] < temp / 2)
+			{
+				push_to_b(s, i, &count, f);
+				i = s->top_a - 1;
+			}
+			else
+				i--;
+		}
+		flag--;
+		}
 		while (i >= 0)
 		{
 			if (s->stack_a[i] < temp)
 			{
-				push_to_b(s, i, &count);
+				push_to_b(s, i, &count, f);
 				i = s->top_a - 1;
 			}
 			else
 				i--;
 		}
 	}
-	sort_a(s, &count);
+	sort_a(s, &count, f);
 	while (s->top_b > 0)
 	{
 		find_max(s);
 		find_min(s);
-		push_to_a(s, &count);
+		push_to_a(s, &count, f);
 	}
-	while (!if_sorted(s))
+	if (smallest_side(s) == 1)
 	{
-		rra(s);
-		count++;
+		while (!if_sorted(s))
+		{
+			ra(s);
+			count++;
+			print_s(s, "ra", f);
+		}
 	}
-	print_s(s, "none");
-	printf("%i\n", count);
+	else
+	{
+		while (!if_sorted(s))
+		{
+			rra(s);
+			print_s(s, "rra", f);
+			count++;
+		}
+	}
+	if (f->flag_count == 1)
+		ft_printf("Total number of operations = %i.\n", count);
+}
+
+t_flags	*initialize_flags()
+{
+	t_flags *flags;
+
+	flags = (t_flags*)malloc(sizeof(t_flags));
+	flags->flag_v = 0;
+	flags->flag_color = 0;
+	flags->flag_count = 0;
+	return (flags);
+}
+
+void	error()
+{
+	ft_printf("Error\n");
+	exit (0);
+}
+
+void	look_for_errors(int argc, char **argv)
+{
+	int i;
+	int l;
+
+	i = 1;
+	while (argc - i > 0)
+	{
+		l = 1;
+		if (ft_atoi(argv[argc - i]) == 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
+			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
+			ft_strcmp(argv[argc - i], "-i") != 0)
+			error();
+		if (ft_strcmp(ft_itoa(ft_atoi(argv[argc - i])), argv[argc - i]) != 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
+			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
+			ft_strcmp(argv[argc - i], "-i") != 0)
+			error();
+		while (argc - i - l > 0)
+		{
+			if (ft_atoi(argv[argc - i]) == ft_atoi(argv[argc - i - l]) && ft_strcmp(argv[argc - i], "-v") != 0 &&
+				ft_strcmp(argv[argc - i], "-c") != 0 && ft_strcmp(argv[argc - i], "-i") != 0)
+				error();
+			l++;
+		}
+		i++;
+	}
+}
+
+int 	look_for_flags(char **str, t_flags *f)
+{
+	int i;
+	int count;
+
+	count = 0;
+	i = 0;
+	while (str[i] != NULL)
+	{
+		if (ft_strcmp(str[i], "-v") == 0)
+		{
+			f->flag_v = 1;
+			count++;
+		}
+		if (ft_strcmp(str[i], "-c") == 0)
+		{
+			count++;
+			f->flag_color = 1;
+		}
+		if (ft_strcmp(str[i], "-i") == 0)
+		{
+			count++;
+			f->flag_count = 1;
+		}
+		i++;
+	}
+	return (count);
+}
+
+int 	len_of_arrays(char **str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] != NULL)
+		i++;
+	return (i);
+}
+
+void	check_for_error(char *str)
+{
+	if (ft_strcmp(ft_itoa(ft_atoi(str)), str) != 0 && ft_strcmp(str, "-v") != 0 &&
+		ft_strcmp(str, "-c") != 0 && ft_strcmp(str, "-i") != 0)
+		error ();
+}
+
+void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
+{
+	char **ans;
+	int i;
+
+	f = initialize_flags();
+	ans = ft_strsplit(argv[1], ' ');
+	i = len_of_arrays(ans) - 1;
+	s = initialize(len_of_arrays(ans) - look_for_flags(ans, f) + 1);
+	while (i >= 0)
+	{
+		check_for_error(ans[i]);
+		if (ft_strcmp(ans[i], "-v") != 0 && ft_strcmp(ans[i], "-c") != 0 && ft_strcmp(ans[i], "-i") != 0)
+			push_a(s, ft_atoi(ans[i]));
+		i--;
+	}
+	if (len_of_arrays(ans) - look_for_flags(ans, f) + 1 < 10)
+		lets_sort(s, f);
+	else
+		main_sort(s, f);
 }
 
 int		main(int argc, char **argv)
 {
 	t_stack		*stack;
+	t_flags		*flags;
 	int			i;
 
-
-	if (argc < 2)
-		return (0);
+	if (argc == 2)
+		handle_one_arg(argv, stack, flags);
+	else
+	{
+	look_for_errors(argc, argv);
 	i = 1;
 	stack = initialize(argc);
+	flags = initialize_flags();
 	while (argc - i > 0)
 	{
-		push_a(stack, ft_atoi(argv[argc - i]));
+		if (ft_strcmp(argv[argc - i], "-v") == 0)
+			flags->flag_v = 1;
+		else if (ft_strcmp(argv[argc - i], "-c") == 0)
+			flags->flag_color = 1;
+		else if (ft_strcmp(argv[argc - i], "-i") == 0)
+			flags->flag_count = 1;
+		else
+			push_a(stack, ft_atoi(argv[argc - i]));
 		i++;
 	}
-	ft_putstr("\x1B[31m");
-	ft_putstr("dude");
-	ft_putstr("\x1B[0m");
-//	main_sort(stack);
-	destroy_stack(stack);
+//	ft_putstr("\x1B[31m");
+//	ft_putstr("dude");
+//	ft_putstr("\x1B[0m");
+	main_sort(stack, flags);
+	destroy_stack(stack); }
 	exit (0);
 }
