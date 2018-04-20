@@ -483,8 +483,6 @@ void	sort_a(t_stack *s, int *count, t_flags *f)
 
 void	push_to_a(t_stack *s, int *count, t_flags *f)
 {
-	static int there = 0;
-
 	if (s->b_max_idx >= s->top_b / 2)
 		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
 		{
@@ -594,7 +592,7 @@ t_flags	*initialize_flags()
 
 void	error()
 {
-	ft_printf("Error\n");
+	write(2, "Error\n", 6);
 	exit (0);
 }
 
@@ -676,6 +674,7 @@ void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
 {
 	char **ans;
 	int i;
+	int l;
 
 	f = initialize_flags();
 	ans = ft_strsplit(argv[1], ' ');
@@ -684,6 +683,13 @@ void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
 	while (i >= 0)
 	{
 		check_for_error(ans[i]);
+		l = 1;
+		while (i - l >= 0)
+		{
+			if (ft_atoi(ans[i]) == ft_atoi(ans[i - l]))
+				error();
+			l++;
+		}
 		if (ft_strcmp(ans[i], "-v") != 0 && ft_strcmp(ans[i], "-c") != 0 && ft_strcmp(ans[i], "-i") != 0)
 			push_a(s, ft_atoi(ans[i]));
 		i--;
@@ -692,9 +698,12 @@ void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
 		lets_sort(s, f);
 	else
 		main_sort(s, f);
+	ft_memdel((void**)&ans);
+	destroy_stack(s);
+	ft_memdel((void**)&f);
 }
 
-int		main(int argc, char **argv)
+int 	main(int argc, char **argv)
 {
 	t_stack		*stack;
 	t_flags		*flags;
@@ -720,10 +729,11 @@ int		main(int argc, char **argv)
 			push_a(stack, ft_atoi(argv[argc - i]));
 		i++;
 	}
-//	ft_putstr("\x1B[31m");
-//	ft_putstr("dude");
-//	ft_putstr("\x1B[0m");
-	main_sort(stack, flags);
-	destroy_stack(stack); }
+	if (argc < 10)
+		lets_sort(stack, flags);
+	else
+		main_sort(stack, flags);
+	destroy_stack(stack);
+	ft_memdel((void**)&flags); }
 	exit (0);
 }
