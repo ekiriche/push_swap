@@ -14,6 +14,9 @@
 # define PUSH_SWAP_H
 
 # include "ft_printf/ft_printf.h"
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 
 typedef struct		s_stack
 {
