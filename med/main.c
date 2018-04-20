@@ -600,6 +600,7 @@ void	look_for_errors(int argc, char **argv)
 {
 	int i;
 	int l;
+	char *wut;
 
 	i = 1;
 	while (argc - i > 0)
@@ -609,10 +610,15 @@ void	look_for_errors(int argc, char **argv)
 			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
 			ft_strcmp(argv[argc - i], "-i") != 0)
 			error();
-		if (ft_strcmp(ft_itoa(ft_atoi(argv[argc - i])), argv[argc - i]) != 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
+		wut = ft_itoa(ft_atoi(argv[argc - i]));
+		if (ft_strcmp(wut, argv[argc - i]) != 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
 			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
 			ft_strcmp(argv[argc - i], "-i") != 0)
+		{
+			ft_memdel((void**)&wut);
 			error();
+		}
+		ft_memdel((void**)&wut);
 		while (argc - i - l > 0)
 		{
 			if (ft_atoi(argv[argc - i]) == ft_atoi(argv[argc - i - l]) && ft_strcmp(argv[argc - i], "-v") != 0 &&
@@ -665,9 +671,29 @@ int 	len_of_arrays(char **str)
 
 void	check_for_error(char *str)
 {
-	if (ft_strcmp(ft_itoa(ft_atoi(str)), str) != 0 && ft_strcmp(str, "-v") != 0 &&
+	char *wut;
+
+	wut = ft_itoa(ft_atoi(str));
+	if (ft_strcmp(wut, str) != 0 && ft_strcmp(str, "-v") != 0 &&
 		ft_strcmp(str, "-c") != 0 && ft_strcmp(str, "-i") != 0)
+	{
+		ft_memdel((void**)&wut);
 		error ();
+	}
+	ft_memdel((void**)&wut);
+}
+
+void	clear_array(char **str)
+{
+	int i;
+
+	i = len_of_arrays(str) - 1;
+	while (i >= 0)
+	{
+		ft_memdel((void**)&str[i]);
+		i--;
+	}
+	ft_memdel((void**)&str);
 }
 
 void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
@@ -686,7 +712,7 @@ void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
 		l = 1;
 		while (i - l >= 0)
 		{
-			if (ft_atoi(ans[i]) == ft_atoi(ans[i - l]))
+			if (ft_atoi(ans[i]) == ft_atoi(ans[i - l]) && ft_strcmp(ans[i], "-v") != 0 && ft_strcmp(ans[i], "-c") != 0 && ft_strcmp(ans[i], "-i") != 0)
 				error();
 			l++;
 		}
@@ -694,11 +720,11 @@ void	handle_one_arg(char **argv, t_stack *s, t_flags *f)
 			push_a(s, ft_atoi(ans[i]));
 		i--;
 	}
-	if (len_of_arrays(ans) - look_for_flags(ans, f) + 1 < 10)
+	clear_array(ans);
+	if (s->top_a < 10)
 		lets_sort(s, f);
 	else
 		main_sort(s, f);
-	ft_memdel((void**)&ans);
 	destroy_stack(s);
 	ft_memdel((void**)&f);
 }
@@ -709,6 +735,7 @@ void	handle_file(int fd, t_stack *s, t_flags *f)
 	char **ans;
 	int i;
 	int l;
+	char *wut;
 
 	if (!get_next_line(fd, &line))
 		error();
@@ -718,8 +745,13 @@ void	handle_file(int fd, t_stack *s, t_flags *f)
 	i = len_of_arrays(ans) - 1;
 	while (i >= 0)
 	{
-		if (ft_strcmp(ft_itoa(ft_atoi(ans[i])), ans[i]) != 0)
+		wut = ft_itoa(ft_atoi(ans[i]));
+		if (ft_strcmp(wut, ans[i]) != 0)
+		{
+			ft_memdel((void**)&wut);
 			error();
+		}
+		ft_memdel((void**)&wut);
 		l = 1;
 		while (i - l >= 0)
 		{
@@ -734,6 +766,8 @@ void	handle_file(int fd, t_stack *s, t_flags *f)
 		lets_sort(s, f);
 	else
 		main_sort(s, f);
+	destroy_stack(s);
+	ft_memdel((void**)&f);
 	exit(0);
 }
 
@@ -765,13 +799,13 @@ int 	main(int argc, char **argv)
 				flags->flag_count = 1;
 			else
 				push_a(stack, ft_atoi(argv[argc - i]));
-		i++;
+			i++;
+		}
+		if (argc < 10)
+			lets_sort(stack, flags);
+		else
+			main_sort(stack, flags);
+		destroy_stack(stack);
+		ft_memdel((void**)&flags); 
 	}
-	if (argc < 10)
-		lets_sort(stack, flags);
-	else
-		main_sort(stack, flags);
-	destroy_stack(stack);
-	ft_memdel((void**)&flags); }
-	exit (0);
 }
