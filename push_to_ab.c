@@ -21,27 +21,15 @@ void	push_to_b(t_stack *s, int idx, int *count, t_flags *f)
 	if (idx < s->top_a / 2)
 	{
 		while (s->stack_a[s->top_a - 1] != temp)
-		{
-			rra(s);
-			*count += 1;
-			print_s(s, "rra", f);
-		}
-		pb(s);
-		*count += 1;
-		print_s(s, "pb", f);
+			do_all("rra", count, s, f);
+		do_all("pb", count, s, f);
 	}
 	else
 	{
 		while (s->stack_a[s->top_a - 1] != temp)
-		{
-			ra(s);
-			*count += 1;
-			print_s(s, "ra", f);
-		}
-		pb(s);
-		*count += 1;
-		print_s(s, "pb", f);
-	}	
+			do_all("ra", count, s, f);
+		do_all("pb", count, s, f);
+	}
 }
 
 void	sort_a(t_stack *s, int *count, t_flags *f)
@@ -52,48 +40,27 @@ void	sort_a(t_stack *s, int *count, t_flags *f)
 	while (!if_sorted(s))
 	{
 		if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
-		{
-			sa(s);
-			*count += 1;
-			print_s(s, "sa", f);
-		}
+			do_all("sa", count, s, f);
 		else
-		{
-			rra(s);
-			*count += 1;
-			print_s(s, "rra", f);
-		}
+			do_all("rra", count, s, f);
 	}
 }
 
 void	push_to_a(t_stack *s, int *count, t_flags *f)
 {
 	if (s->b_max_idx >= s->top_b / 2)
-		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
-		{
-			rb(s);
-			*count += 1;
-			print_s(s, "rb", f);
-		}
+		while (s->stack_b[s->top_b - 1] != s->b_max &&
+			s->stack_b[s->top_b - 1] != s->b_min)
+			do_all("rb", count, s, f);
 	else
-		while (s->stack_b[s->top_b - 1] != s->b_max && s->stack_b[s->top_b - 1] != s->b_min)
-		{
-			rrb(s);
-			*count += 1;
-			print_s(s, "rrb", f);
-		}
+		while (s->stack_b[s->top_b - 1] != s->b_max &&
+			s->stack_b[s->top_b - 1] != s->b_min)
+			do_all("rrb", count, s, f);
 	if (s->stack_b[s->top_b - 1] == s->b_min)
 	{
-		pa(s);
-		print_s(s, "pa", f);
-		ra(s);
-		print_s(s, "ra", f);
-		*count += 2;
+		do_all("pa", count, s, f);
+		do_all("ra", count, s, f);
 	}
 	else
-	{
-		pa(s);
-		print_s(s, "pa", f);
-		*count += 1;
-	}
+		do_all("pa", count, s, f);
 }

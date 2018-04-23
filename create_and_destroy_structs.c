@@ -6,7 +6,7 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 12:58:44 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/04/23 12:58:55 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/04/23 19:27:57 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ t_stack		*initialize(int size)
 	ans->top_b = 0;
 	ans->stack_b = (int*)malloc(sizeof(int) * (ans->size));
 	ans->stack_a = (int*)malloc(sizeof(int) * (ans->size));
-
 	return (ans);
 }
 
@@ -33,7 +32,7 @@ void		destroy_stack(t_stack *stack)
 	ft_memdel((void**)&stack);
 }
 
-t_flags	*initialize_flags()
+t_flags		*initialize_flags(void)
 {
 	t_flags *flags;
 
@@ -44,7 +43,7 @@ t_flags	*initialize_flags()
 	return (flags);
 }
 
-void	clear_array(char **str)
+void		clear_array(char **str)
 {
 	int i;
 
@@ -55,4 +54,16 @@ void	clear_array(char **str)
 		i--;
 	}
 	ft_memdel((void**)&str);
+}
+
+int			if_empty(int *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	if (i == 0)
+		return (1);
+	return (0);
 }

@@ -6,7 +6,7 @@
 #    By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/22 15:34:15 by ekiriche          #+#    #+#              #
-#    Updated: 2018/04/23 13:58:33 by ekiriche         ###   ########.fr        #
+#    Updated: 2018/04/23 18:13:14 by ekiriche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ SRC1 = main.c \
 	  push_to_ab.c \
 	  sorts.c \
 	  ultimate_printer.c \
-	  usefull_funcs.c \
+	  useful_funcs.c \
 
 SRC2 = checker.c \
 	   basic_ops.c \
@@ -41,7 +41,7 @@ SRC2 = checker.c \
 	  push_to_ab.c \
 	  sorts.c \
 	  ultimate_printer.c \
-	  usefull_funcs.c \
+	  useful_funcs.c \
 
 OBJ1 = $(SRC1:.c=.o)
 OBJ2 = $(SRC2:.c=.o)
@@ -49,16 +49,17 @@ FLAGS = -g -Wall -Wextra -Werror
 
 all: $(NAME1)
 
-$(NAME1): $(OBJ1)
+$(NAME1): $(OBJ1) $(OBJ2)
 	make -C ./ft_printf/ all
 	gcc -g $(OBJ1) -o $(NAME1) ./ft_printf/libftprintf.a
+	gcc -g $(OBJ2) -o $(NAME2) ./ft_printf/libftprintf.a
 
 %.o: %.c
 	gcc $(FLAGS) -o $@ -c $<
 
 clean:
 	make -C ./ft_printf/ clean
-	rm -f $(OBJ1)
+	rm -f $(OBJ1) $(OBJ2)
 
 fclean: clean
 	make -C ./ft_printf/ fclean

@@ -12,39 +12,56 @@
 
 #include "push_swap.h"
 
-void	error()
+void	error(void)
 {
 	write(2, "Error\n", 6);
-	exit (0);
+	exit(0);
+}
+
+void	check_for_intmax_intmin(int argc, int i, char **argv)
+{
+	char *wut;
+
+	wut = ft_itoa(ft_atoi(argv[argc - i]));
+	if (ft_strcmp(wut, argv[argc - i]) != 0 &&
+		ft_strcmp(argv[argc - i], "0") != 0 &&
+		ft_strcmp(argv[argc - i], "-v") != 0 &&
+		ft_strcmp(argv[argc - i], "-c") != 0 &&
+		ft_strcmp(argv[argc - i], "-i") != 0)
+	{
+		ft_memdel((void**)&wut);
+		error();
+	}
+	ft_memdel((void**)&wut);
+}
+
+void	check_for_digit(char **argv, int argc, int i)
+{
+	if (ft_atoi(argv[argc - i]) == 0 &&
+		ft_strcmp(argv[argc - i], "0") != 0 &&
+		ft_strcmp(argv[argc - i], "-v") != 0 &&
+		ft_strcmp(argv[argc - i], "-c") != 0 &&
+		ft_strcmp(argv[argc - i], "-i") != 0)
+		error();
 }
 
 void	look_for_errors(int argc, char **argv)
 {
 	int i;
 	int l;
-	char *wut;
 
 	i = 1;
 	while (argc - i > 0)
 	{
 		l = 1;
-		if (ft_atoi(argv[argc - i]) == 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
-			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
-			ft_strcmp(argv[argc - i], "-i") != 0)
-			error();
-		wut = ft_itoa(ft_atoi(argv[argc - i]));
-		if (ft_strcmp(wut, argv[argc - i]) != 0 && ft_strcmp(argv[argc - i], "0") != 0 &&
-			ft_strcmp(argv[argc - i], "-v") != 0 && ft_strcmp(argv[argc - i], "-c") != 0 &&
-			ft_strcmp(argv[argc - i], "-i") != 0)
-		{
-			ft_memdel((void**)&wut);
-			error();
-		}
-		ft_memdel((void**)&wut);
+		check_for_digit(argv, argc, i);
+		check_for_intmax_intmin(argc, i, argv);
 		while (argc - i - l > 0)
 		{
-			if (ft_atoi(argv[argc - i]) == ft_atoi(argv[argc - i - l]) && ft_strcmp(argv[argc - i], "-v") != 0 &&
-				ft_strcmp(argv[argc - i], "-c") != 0 && ft_strcmp(argv[argc - i], "-i") != 0)
+			if (ft_atoi(argv[argc - i]) == ft_atoi(argv[argc - i - l]) &&
+				ft_strcmp(argv[argc - i], "-v") != 0 &&
+				ft_strcmp(argv[argc - i], "-c") != 0 &&
+				ft_strcmp(argv[argc - i], "-i") != 0)
 				error();
 			l++;
 		}
@@ -61,7 +78,7 @@ void	check_for_error(char *str)
 		ft_strcmp(str, "-c") != 0 && ft_strcmp(str, "-i") != 0)
 	{
 		ft_memdel((void**)&wut);
-		error ();
+		error();
 	}
 	ft_memdel((void**)&wut);
 }

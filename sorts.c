@@ -20,102 +20,79 @@ void	lets_sort(t_stack *s, t_flags *f)
 	while (!if_sorted(s))
 	{
 		if (if_first_smallest(s))
-		{
-			pb(s);
-			count++;
-			print_s(s, "pb", f);
-		}
+			do_all("pb", &count, s, f);
 		else if (s->stack_a[s->top_a - 1] > s->stack_a[s->top_a - 2])
-		{
-			sa(s);
-			count++;
-			print_s(s, "sa", f);
-		}
+			do_all("sa", &count, s, f);
 		else if (smallest_side(s) == 2)
-		{
-			rra(s);
-			count++;
-			print_s(s, "rra", f);
-		}
+			do_all("rra", &count, s, f);
 		else if (smallest_side(s) == 1)
-		{
-			ra(s);
-			count++;
-			print_s(s, "ra", f);
-		}
+			do_all("ra", &count, s, f);
 	}
 	while (s->top_b - 1 >= 0)
-	{
-		pa(s);
-		count++;
-		print_s(s, "pa", f);
-	}
+		do_all("pa", &count, s, f);
 	if (f->flag_count == 1)
 		ft_printf("Total number of operations = %d\n", count);
 }
 
-void	main_sort(t_stack *s, t_flags *f)
+void	sort_step_2(t_stack *s, t_flags *f, int *count)
 {
-	int temp;
-	int i;
-	int count;
-
-	count = 0;
-	int flag = 3;
-	while (s->top_a > 3 && !if_sorted(s))
-	{
-		temp = s->stack_a[find_median_a(s)];
-		i = s->top_a - 1;
-		if (flag >= 1 && s->size >= 400)
-		{
-			while (i >= 0 && s->top_a > 3 && !if_sorted(s))
-		{
-			if (s->stack_a[i] < temp / 2)
-			{
-				push_to_b(s, i, &count, f);
-				i = s->top_a - 1;
-			}
-			else
-				i--;
-		}
-		flag--;
-		}
-		while (i >= 0)
-		{
-			if (s->stack_a[i] < temp)
-			{
-				push_to_b(s, i, &count, f);
-				i = s->top_a - 1;
-			}
-			else
-				i--;
-		}
-	}
-	sort_a(s, &count, f);
+	sort_a(s, count, f);
 	while (s->top_b > 0)
 	{
 		find_max(s);
 		find_min(s);
-		push_to_a(s, &count, f);
+		push_to_a(s, count, f);
 	}
 	if (smallest_side(s) == 1)
-	{
 		while (!if_sorted(s))
-		{
-			ra(s);
-			count++;
-			print_s(s, "ra", f);
-		}
-	}
+			do_all("ra", count, s, f);
 	else
-	{
 		while (!if_sorted(s))
-		{
-			rra(s);
-			print_s(s, "rra", f);
-			count++;
-		}
-	}
+			do_all("rra", count, s, f);
 	if (f->flag_count == 1)
-		ft_printf("Total number of operations = %i.\n", count);
+		ft_printf("Total number of operations = %i.\n", *count);
+}
+
+void	sort_step_1(t_stack *s, t_flags *f, t_crappy_code *c)
+{
+	if (c->flag >= 1 && s->size >= 400)
+	{
+		while (c->i >= 0 && s->top_a > 3 && !if_sorted(s))
+		{
+			if (s->stack_a[c->i] < c->temp / 2)
+			{
+				push_to_b(s, c->i, &c->count, f);
+				c->i = s->top_a - 1;
+			}
+			else
+				c->i--;
+		}
+		c->flag--;
+	}
+	while (c->i >= 0)
+	{
+		if (s->stack_a[c->i] < c->temp)
+		{
+			push_to_b(s, c->i, &c->count, f);
+			c->i = s->top_a - 1;
+		}
+		else
+			c->i--;
+	}
+}
+
+void	main_sort(t_stack *s, t_flags *f)
+{
+	t_crappy_code *c;
+
+	c = (t_crappy_code*)malloc(sizeof(t_crappy_code));
+	c->count = 0;
+	c->flag = 3;
+	while (s->top_a > 3 && !if_sorted(s))
+	{
+		c->temp = s->stack_a[find_median_a(s)];
+		c->i = s->top_a - 1;
+		sort_step_1(s, f, c);
+	}
+	sort_step_2(s, f, &c->count);
 }

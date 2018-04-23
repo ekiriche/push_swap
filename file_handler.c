@@ -6,25 +6,18 @@
 /*   By: ekiriche <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 13:15:02 by ekiriche          #+#    #+#             */
-/*   Updated: 2018/04/23 13:15:11 by ekiriche         ###   ########.fr       */
+/*   Updated: 2018/04/23 17:11:17 by ekiriche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void	handle_file(int fd, t_stack *s, t_flags *f)
+void	fill_stack_from_file(char **ans, t_stack *s)
 {
-	char *line;
-	char **ans;
-	int i;
-	int l;
-	char *wut;
+	int		i;
+	int		l;
+	char	*wut;
 
-	if (!get_next_line(fd, &line))
-		error();
-	ans = ft_strsplit(line, ' ');
-	s = initialize(len_of_arrays(ans) + 1);
-	f = initialize_flags();
 	i = len_of_arrays(ans) - 1;
 	while (i >= 0)
 	{
@@ -45,11 +38,25 @@ void	handle_file(int fd, t_stack *s, t_flags *f)
 		push_a(s, ft_atoi(ans[i]));
 		i--;
 	}
-	if (s->top_a < 10)
+}
+
+void	handle_file(int fd, t_stack *s, t_flags *f)
+{
+	char *line;
+	char **ans;
+
+	if (!get_next_line(fd, &line))
+		error();
+	ans = ft_strsplit(line, ' ');
+	ft_memdel((void**)&line);
+	s = initialize(len_of_arrays(ans) + 1);
+	f = initialize_flags();
+	fill_stack_from_file(ans, s);
+	if (s->top_a < 20)
 		lets_sort(s, f);
 	else
 		main_sort(s, f);
 	destroy_stack(s);
+	clear_array(ans);
 	ft_memdel((void**)&f);
-	exit(0);
 }

@@ -42,6 +42,14 @@ typedef struct 		s_flags
 	int				flag_count;
 }					t_flags;
 
+typedef struct  	s_crappy_code
+{
+	int temp;
+	int i;
+	int flag;
+	int count;
+}					t_crappy_code;
+
 void				main_sort(t_stack *s, t_flags *f);
 void				lets_sort(t_stack *s, t_flags *f);
 void				push_to_a(t_stack *s, int *count, t_flags *f);
@@ -83,5 +91,12 @@ int		pop_a(t_stack *stack);
 void	actualy_sort(t_stack *s);
 int 	if_empty(int *str);
 void	handle_one_param_check(t_stack *s, char *str);
+void	check_for_intmax_intmin(int argc, int i, char **argv);
+void	check_for_digit(char **argv, int argc, int i);
+void	do_all(char *op, int *count, t_stack *s, t_flags *f);
+void	ordinary_start(int argc, char **argv, t_stack *stack, t_flags *flags);
+void	fill_stack_from_file(char **ans, t_stack *s);
+void	for_the_norminette(char **ans, t_stack *s);
+void	do_command(t_stack *s, char *line);
 
 #endif

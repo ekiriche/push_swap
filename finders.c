@@ -69,17 +69,16 @@ void	find_min(t_stack *s)
 {
 	int		i;
 
-	i = 0;
+	i = -1;
 	s->b_min = s->stack_b[s->top_b - 1];
 	s->b_min_idx = s->top_b - 1;
-	while (s->top_b - 2 - i >= 0)
+	while (s->top_b - 2 - ++i >= 0)
 	{
 		if (s->b_min > s->stack_b[s->top_b - i - 2])
 		{
 			s->b_min = s->stack_b[s->top_b - i - 2];
 			s->b_min_idx = s->top_b - i - 2;
 		}
-		i++;
 	}
 	i = 0;
 	s->a_min = s->stack_a[s->top_a - 1];
@@ -99,17 +98,16 @@ void	find_max(t_stack *s)
 {
 	int		i;
 
-	i = 0;
+	i = -1;
 	s->b_max = s->stack_b[s->top_b - 1];
 	s->b_max_idx = s->top_b - 1;
-	while (s->top_b - 2 - i >= 0)
+	while (s->top_b - 2 - ++i >= 0)
 	{
 		if (s->b_max < s->stack_b[s->top_b - i - 2])
 		{
 			s->b_max = s->stack_b[s->top_b - i - 2];
 			s->b_max_idx = s->top_b - i - 2;
 		}
-		i++;
 	}
 	i = 0;
 	s->a_max = s->stack_a[s->top_a - 1];
