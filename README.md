@@ -58,3 +58,5 @@ arguments received.
     OR
     
     `ARG="4 67 3 87 23"; ./push_swap $ARG | ./checker $ARG`
+
+## Final grade - 96/100
